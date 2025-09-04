@@ -11,7 +11,6 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
 
 (function () {
   'use strict'; // wraps everything for which we can use strict mode -JC
-
   var log = function(message) {
     if(!globalThis.__quiet) { // mongo shell param, coming from https://github.com/mongodb/mongo/blob/1a80c3a9fe493072534cce84b921f4d6adfad1f6/src/mongo/shell/mongo_main.cpp#L765
       print(message);
@@ -69,7 +68,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
     var read = function(name, defaultValue) {
       var value = typeof configProvider[name] !== 'undefined' ? configProvider[name] : defaultValue;
       config[name] = value;
-      log('Using '+name+' of ' + tojson(value));
+      log('Using '+name+' of ' + EJSON.stringify(value));
     };
     read('collection', null);
     read('query', {});
@@ -137,7 +136,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
       });
     };
 
-    log('Using plugins of ' + tojson(this.plugins.map(function(plugin){return plugin.path;})));
+    log('Using plugins of ' + EJSON.stringify(this.plugins.map(function(plugin){return plugin.path;})));
     return this;
   };
 
@@ -345,7 +344,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
   };
 
   // extend standard MongoDB cursor of reduce method - call forEach and combine the results
-    cursorReduce = function(callback, initialValue) {
+  var cursorReduce = function(callback, initialValue) {
     var result = initialValue;
     this.forEach(function(obj){
       result = callback(result, obj);
@@ -479,7 +478,6 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
       return [border].concat(table).concat(border).join('\n');
     }
   };
-
   var pluginsOutput = $plugins.execute('formatResults', varietyResults);
   if (pluginsOutput.length > 0) {
     pluginsOutput.forEach(function(i){print(i);});
