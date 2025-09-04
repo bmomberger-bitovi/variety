@@ -338,7 +338,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
   };
 
   // extend standard MongoDB cursor of reduce method - call forEach and combine the results
-  DBQuery.prototype.reduce = function(callback, initialValue) {
+    cursorReduce = function(callback, initialValue) {
     var result = initialValue;
     this.forEach(function(obj){
       result = callback(result, obj);
