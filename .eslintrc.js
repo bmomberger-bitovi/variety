@@ -31,10 +31,9 @@ module.exports = {
     ]
   },
   'globals': {
-    '__quiet': false,
+    'globalThis': false,
     'slaveOk': false,
     'collection': false,
-    'DBQuery': false,
     'BinData': false,
     'NumberLong': false,
     'tojson': false

@@ -13,7 +13,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
   'use strict'; // wraps everything for which we can use strict mode -JC
 
   var log = function(message) {
-    if(!__quiet) { // mongo shell param, coming from https://github.com/mongodb/mongo/blob/5fc306543cd3ba2637e5cb0662cc375f36868b28/src/mongo/shell/dbshell.cpp#L624
+    if(!globalThis.__quiet) { // mongo shell param, coming from https://github.com/mongodb/mongo/blob/1a80c3a9fe493072534cce84b921f4d6adfad1f6/src/mongo/shell/mongo_main.cpp#L765
       print(message);
     }
   };
@@ -33,10 +33,10 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
   var knownDatabases = db.adminCommand('listDatabases').databases;
   if(typeof knownDatabases !== 'undefined') { // not authorized user receives error response (json) without databases key
     knownDatabases.forEach(function(d){
-      if(db.getSisterDB(d.name).getCollectionNames().length > 0) {
+      if(db.getSiblingDB(d.name).getCollectionNames().length > 0) {
         dbs.push(d.name);
       }
-      if(db.getSisterDB(d.name).getCollectionNames().length === 0) {
+      if(db.getSiblingDB(d.name).getCollectionNames().length === 0) {
         emptyDbs.push(d.name);
       }
     });
