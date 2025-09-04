@@ -137,6 +137,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
     };
 
     log('Using plugins of ' + tojson(this.plugins.map(function(plugin){return plugin.path;})));
+    return this;
   };
 
   var $plugins = new PluginsClass(this);
