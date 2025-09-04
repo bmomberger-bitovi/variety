@@ -87,6 +87,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
     read('arrayEscape', 'XX');
     read('lastValue', false);
     read('breakOutSubObjects', false);
+    read('occurrences', true);
 
     //Translate excludeSubkeys to set like object... using an object for compatibility...
     config.excludeSubkeys = config.excludeSubkeys.reduce(function (result, item) { result[item+'.'] = true; return result; }, {});
@@ -393,7 +394,10 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
   }
 
   var createAsciiTable = function(results) {
-    var headers = ['key', 'types', 'occurrences', 'percents'];
+    var headers = ['key', 'types'];
+    if (config.occurrences) {
+      headers.push('occurrences', 'percents');
+    }
     if (config.lastValue) {
       headers.push('lastValue');
     }
@@ -418,7 +422,10 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
         types = typeKeys;
       }
 
-      var rawArray = [row._id.key, types, row.totalOccurrences, row.percentContaining.toFixed(Math.min(maxDigits, 20))];
+      var rawArray = [row._id.key, types];
+      if (config.occurrences) {
+        rawArray.push(row.totalOccurrences, row.percentContaining.toFixed(Math.min(maxDigits, 20)));
+      }
       if (config.lastValue && row['lastValue']) {
         rawArray.push(row['lastValue']);
       }
