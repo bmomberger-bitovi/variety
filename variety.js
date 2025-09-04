@@ -151,8 +151,12 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
       var typeofThing = typeof thing; // edgecase of JSHint's "singleGroups"
       return typeofThing[0].toUpperCase() + typeofThing.slice(1);
     } else {
-      if (thing && thing.constructor === Array) {
-        return 'Array';
+      if (thing && Array.isArray(thing)/*thing.constructor === Array*/) {
+        if (thing.length > 0) {
+          return 'Array(' + varietyTypeOf(thing[0]) + ')';
+        } else {
+          return 'Array(empty)';
+        }
       } else if (thing === null) {
         return 'null';
       } else if (thing instanceof Date) {
@@ -343,7 +347,24 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
   };
 
   var cursor = db.getCollection(config.collection).find(config.query).sort(config.sort).limit(config.limit);
-  var interimResults = cursor.reduce(reduceDocuments, {});
+  var interimResults = cursorReduce.call(cursor, reduceDocuments, Object.create(null));
+
+  // For typed arrays, if there is only one array type found, and some arrays are empty,
+  //   assume that the empty arrays would be of the type of the typed arrays.
+  for (const key in interimResults) {
+    const existing = interimResults[key];
+    if (
+      Object.keys(existing.types).length === 2
+      && existing.types['Array(empty)']
+      && Object.keys(existing.types).filter(type => type !== 'Array(empty)')[0].startsWith('Array')
+    ) {
+      const emptyCount = existing.types['Array(empty)'];
+      delete existing.types['Array(empty)'];
+      const otherKey = Object.keys(existing.types)[0];
+      existing.types[otherKey] += emptyCount;
+    }
+  }
+
   var varietyResults = convertResults(interimResults, cursor.size())
   .filter(filter)
   .sort(comparator);
