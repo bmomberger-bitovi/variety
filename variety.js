@@ -88,6 +88,7 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
     read('lastValue', false);
     read('breakOutSubObjects', false);
     read('occurrences', true);
+    read('suppressNulls', false);
 
     //Translate excludeSubkeys to set like object... using an object for compatibility...
     config.excludeSubkeys = config.excludeSubkeys.reduce(function (result, item) { result[item+'.'] = true; return result; }, {});
@@ -295,6 +296,9 @@ Released by Maypop Inc, © 2012–2023, under the MIT License. */
       var keys = {};
       for(var key in obj) {
         keys[key] = obj[key];
+      }
+      if (config.suppressNulls && Object.keys(keys).length > 1) {
+        delete keys['null'];
       }
       return keys;
     //return keys.sort();
